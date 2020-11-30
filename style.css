@@ -1,0 +1,15 @@
+#title,
+#description {
+    width: 100vw;
+    text-align: center;
+    font-size: large;
+}
+
+#description {
+    font-size: small;
+}
+
+#root {
+    display: flex;
+    justify-content: center;
+}
