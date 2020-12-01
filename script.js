@@ -29,10 +29,7 @@ var projection = d3
 var data = new Map();
 
 // returns color in the scale
-var colorScale = d3
-    .scaleQuantize()
-    .domain([3, 75])
-    .range(d3.schemeBlues["9"]);
+var colorScale = d3.scaleQuantize().domain([3, 75]).range(d3.schemeBlues["9"]);
 
 var promises = [
     d3.json(COUNTY_DATA),
@@ -60,4 +57,53 @@ function ready([us]) {
         .text(function (d, i) {
             return data.get(d.id) + " %";
         });
+    
+    // declares the legend scale
+    var x = d3.scaleLinear()
+        .domain([3, 75])
+        .rangeRound([9, 226]);
+    
+    // append legend scale to the svg
+    var g = svg
+        .append("g")
+        .attr("class", "key")
+        .attr("transform", "translate(0,"+(height - 20)+")");
+    
+    // append legend description on legend scale
+    g.append("text")
+        .attr("class", "caption")
+        .attr("x", x.range()[0])
+        .attr("y", -15)
+        .attr("fill", "#000")
+        .attr("text-anchor", "start")
+        .text("Education rate");
+    
+    // format scale, specify ticks
+    g.call(
+        d3
+            .axisBottom(x)
+            .ticks(7)
+    )
+        .select(".domain")
+        .remove();
+    
+    // specify color pallete for legend
+    var pallete = svg.append("g").attr("id", "pallete");
+
+    // add colors to legend
+    var swatch = pallete.selectAll("rect").data(d3.schemeBlues[8]);
+    swatch
+        .enter()
+        .append("rect")
+        .attr("fill", function (d) {
+            return d;
+        })
+        .attr("x", function (d, i) {
+            return i * 30 + "";
+        })
+        .attr("y", function (d, i) {
+            return height - 30 + "";
+        })
+        .attr("width", "30")
+        .attr("height", "10");
 }
