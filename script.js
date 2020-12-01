@@ -35,7 +35,12 @@ var promises = [
     d3.json(COUNTY_DATA),
     d3.json(EDUCATION_DATA).then((d) => {
         d.forEach((element) => {
-            data.set(element.fips, element.bachelorsOrHigher);
+            data.set(element.fips, {
+                fips: element.fips,
+                county: element.area_name,
+                state: element.state,
+                percentage: element.bachelorsOrHigher
+            });
         });
     }),
 ];
@@ -49,8 +54,11 @@ function ready([us]) {
         .data(topojson.feature(us, us.objects.counties).features)
         .enter()
         .append("path")
+        .attr("class", "county")
+        .attr("data-fips", (d) => data.get(d.id).fips)
+        .attr("data-education", (d) => data.get(d.id).percentage)
         .attr("fill", function (d) {
-            return colorScale(data.get(d.id));
+            return colorScale(data.get(d.id).percentage);
         })
         .attr("d", path)
         .append("title")
@@ -88,7 +96,7 @@ function ready([us]) {
         .remove();
     
     // specify color pallete for legend
-    var pallete = svg.append("g").attr("id", "pallete");
+    var pallete = svg.append("g").attr("id", "legend");
 
     // add colors to legend
     var swatch = pallete.selectAll("rect").data(d3.schemeBlues[8]);
