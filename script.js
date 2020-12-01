@@ -28,12 +28,11 @@ var projection = d3
 // Data and color scale
 var data = new Map();
 
+// returns color in the scale
 var colorScale = d3
     .scaleThreshold()
     .domain(d3.range(10, 65))
     .range(d3.schemeBlues[9]);
-
-var color = d3.scaleQuantize([1, 70], d3.schemeBlues[9]);
 
 var promises = [
     d3.json(COUNTY_DATA),
@@ -55,7 +54,6 @@ function ready([us]) {
         .append("path")
         .attr("fill", function (d) {
             return colorScale(data.get(d.id));
-            // return color(data.get(d.id));
         })
         .attr("d", path)
         .append("title")
