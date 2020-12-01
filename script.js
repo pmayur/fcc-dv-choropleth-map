@@ -39,7 +39,7 @@ var promises = [
                 fips: element.fips,
                 county: element.area_name,
                 state: element.state,
-                percentage: element.bachelorsOrHigher
+                percentage: element.bachelorsOrHigher,
             });
         });
     }),
@@ -48,7 +48,8 @@ var promises = [
 Promise.all(promises).then(ready);
 
 function ready([us]) {
-    svg.append("g")
+    // creates the map
+    let map = svg.append("g")
         .attr("class", "counties")
         .selectAll("path")
         .data(topojson.feature(us, us.objects.counties).features)
@@ -61,22 +62,16 @@ function ready([us]) {
             return colorScale(data.get(d.id).percentage);
         })
         .attr("d", path)
-        .append("title")
-        .text(function (d, i) {
-            return data.get(d.id) + " %";
-        });
-    
+
     // declares the legend scale
-    var x = d3.scaleLinear()
-        .domain([3, 75])
-        .rangeRound([9, 226]);
-    
+    var x = d3.scaleLinear().domain([3, 75]).rangeRound([9, 226]);
+
     // append legend scale to the svg
     var g = svg
         .append("g")
         .attr("class", "key")
-        .attr("transform", "translate(0,"+(height - 20)+")");
-    
+        .attr("transform", "translate(0," + (height - 20) + ")");
+
     // append legend description on legend scale
     g.append("text")
         .attr("class", "caption")
@@ -85,16 +80,10 @@ function ready([us]) {
         .attr("fill", "#000")
         .attr("text-anchor", "start")
         .text("Education rate");
-    
+
     // format scale, specify ticks
-    g.call(
-        d3
-            .axisBottom(x)
-            .ticks(7)
-    )
-        .select(".domain")
-        .remove();
-    
+    g.call(d3.axisBottom(x).ticks(7)).select(".domain").remove();
+
     // specify color pallete for legend
     var pallete = svg.append("g").attr("id", "legend");
 
