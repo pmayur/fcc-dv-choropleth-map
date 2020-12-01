@@ -49,7 +49,8 @@ Promise.all(promises).then(ready);
 
 function ready([us]) {
     // creates the map
-    let map = svg.append("g")
+    let map = svg
+        .append("g")
         .attr("class", "counties")
         .selectAll("path")
         .data(topojson.feature(us, us.objects.counties).features)
@@ -61,7 +62,40 @@ function ready([us]) {
         .attr("fill", function (d) {
             return colorScale(data.get(d.id).percentage);
         })
-        .attr("d", path)
+        .attr("d", path);
+
+    // create a tooltip
+    var tooltip = d3
+        .select("#root")
+        .append("div")
+        .attr("id", "tooltip")
+        .style("opacity", 0);
+    
+    // add a mouseover function for counties
+    map.on("mouseover", function(d){
+
+        // get id from attributes
+        let id = d.srcElement.getAttribute("data-fips");
+        let element = data.get(parseInt(id))
+
+        tooltip.attr("data-education", element.percentage)
+        tooltip
+                .html(
+                    element.county + ", " + element.state +
+                        "<br/>" +
+                        "Graduate and ablove: " + element.percentage + "%"
+                )
+                .style("left", d.pageX + "px")
+                .style("top", d.pageY - 28 + "px");
+
+        // make tooltip visible
+        tooltip.transition().duration(200).style("opacity", 0.9);
+    })
+
+    // make tooltip disappear
+    map.on("mouseout", function (d) {
+        tooltip.transition().duration(500).style("opacity", 0);
+    });
 
     // declares the legend scale
     var x = d3.scaleLinear().domain([3, 75]).rangeRound([9, 226]);
@@ -79,7 +113,7 @@ function ready([us]) {
         .attr("y", -15)
         .attr("fill", "#000")
         .attr("text-anchor", "start")
-        .text("Education rate");
+        .text("Education rate (%)");
 
     // format scale, specify ticks
     g.call(d3.axisBottom(x).ticks(7)).select(".domain").remove();
