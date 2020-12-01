@@ -30,9 +30,9 @@ var data = new Map();
 
 // returns color in the scale
 var colorScale = d3
-    .scaleThreshold()
-    .domain(d3.range(10, 65))
-    .range(d3.schemeBlues[9]);
+    .scaleQuantize()
+    .domain([3, 75])
+    .range(d3.schemeBlues["9"]);
 
 var promises = [
     d3.json(COUNTY_DATA),
